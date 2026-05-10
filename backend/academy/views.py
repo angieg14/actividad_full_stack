@@ -29,6 +29,10 @@ class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     search_fields = ['name', 'description']
     ordering_fields = ['created_at', 'price', 'duration_hours']
+    #hay que filtrar, buscar y ordenar
+    filterset_fields = ['level', 'is_active']
+    search_fields = ['name', 'description']
+    ordering_field = ['price', 'duration_hours', 'created_at']
 
 class EnrollmentViewSet(viewsets.ModelViewSet):
     queryset = Enrollment.objects.all()
