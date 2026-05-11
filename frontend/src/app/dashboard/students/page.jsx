@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { useForm } from "react-hook-form"; //maneja el formulario
+import { zodResolver } from "@hookform/resolvers/zod"; //se encarga de que los datos sean válidos antes de mandarlos a Django
+import * as z from "zod"; 
 import { studentsService } from "@/services/students.service";
 
+// componenetes visuales de shadcn
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +23,7 @@ import {
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 const studentSchema = z.object({
+  //estas son las validaciones antes de llegar a Django
   first_name: z.string().min(1, "El nombre es requerido"),
   last_name: z.string().min(1, "El apellido es requerido"),
   email: z.string().email("Correo electrónico inválido"),
@@ -35,9 +37,9 @@ export default function StudentsPage() {
   const [success, setSuccess] = useState("");
 
   const {
-    register,
-    handleSubmit,
-    reset,
+    register, //conecta los inputs con React Hook Forms
+    handleSubmit, //la función que envuelve el envío
+    reset, //limpia el formulario dsp de guardarlo  
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(studentSchema),
@@ -72,7 +74,7 @@ export default function StudentsPage() {
     }
   };
 
-  return (
+  return (  
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Estudiantes</h1>
