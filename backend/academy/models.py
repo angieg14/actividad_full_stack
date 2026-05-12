@@ -47,9 +47,12 @@ class Course(models.Model):
     is_active = models.BooleanField(default=False)
     # creados por liss y angie  
     COURSE_LEVEL = (
-        ('basic', 'Basic'),
-        ('intermediate', 'Intermediate'),
-        ('advanced', 'Advanced'),
+        ('basic', 'basic'),
+        ('Basic', 'Basic'),
+        ('intermediate', 'intermediate'),
+        ('Intermediate', 'Intermediate'),
+        ('advanced', 'advanced'),
+        ('Advanced', 'Advanced'),
     )  
     
     # en default no se deja nada porque se necesita saber si o si el nivel

@@ -174,7 +174,7 @@ export default function StudentsPage() {
                           <TableCell>{student.phone}</TableCell>
                           <TableCell>
                             {new Date(student.created_at).toLocaleDateString()}
-                          </TableCell>
+                          </TableCell>                          
                         </TableRow>
                       ))}
                     </TableBody>

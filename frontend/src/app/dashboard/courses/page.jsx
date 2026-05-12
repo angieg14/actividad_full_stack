@@ -31,7 +31,7 @@ const courseSchema = z.object({
   duration_hours: z.coerce.number().int().positive("Las horas deben ser mayor a cero"),
   price: z.coerce.number().min(0, "Escribe el precio"), //coerce es para lo tome como numero y no texto  
   level: z.enum(["basic", "Basic", "intermediate", "Intermediate", "advanced", "Advanced"], "Nivel de curso no válido"),
-  is_active : z.boolean().optional("marca o no"),
+  is_active: z.boolean().optional("marca o no"),
 
 });
 
@@ -40,6 +40,8 @@ export default function CoursesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [edit, setEdit] = useState(null);
+  const [eliminar, setDelete] = useState(null);
 
   const {
     register, //conecta los inputs con React Hook Forms
@@ -50,6 +52,45 @@ export default function CoursesPage() {
     resolver: zodResolver(courseSchema),
   });
 
+
+  const editCourse = async (course) => {
+    setEdit(course.id);
+    reset({
+      name: course.name,
+      description: course.description,
+      duration_hours: course.duration_hours,
+      price: course.price,
+      level: course.level,
+      is_active: course.is_active,
+    })
+  }
+  const deleteCourse = async (id) => {
+    const confirmar = window.confirm("¿Estás seguro de que deseas eliminar este curso?");
+    if (confirmar) {
+      try {
+        //   setDelete(course.id);
+        await courseService.deleteCourses(id);
+        setSuccess("eliminado exitosamente");
+        await loadCourse();
+
+
+      } catch (err) {
+        setError("error al eliminar :(")
+      }
+    }
+  }
+
+  const editcourse = async (course) => {
+    setEdit(course.id);
+    reset({
+      name: course.name,
+      description: course.description,
+      duration_hours: course.duration_hours,
+      price: course.price,
+      level: course.level,
+      is_active: course.is_active,
+    })
+  }
   const loadCourse = async () => {
     try {
       setIsLoading(true);
@@ -66,15 +107,33 @@ export default function CoursesPage() {
     loadCourse();
   }, []);
 
+
   const onSubmit = async (data) => {
     try {
       setError("");
       setSuccess("");
-      await courseService.createCourses(data);
-      setSuccess("Curso creado exitosamente");
-      reset();
+      if (edit) {
+        await courseService.patchCourses(edit, data);
+        setSuccess("editar");
+        setEdit(null);
+
+      }
+      else {
+        await courseService.createCourses(data);
+        setSuccess("Curso creado exitosamente");
+      }
+      reset(
+        {
+          name: "",
+          description: "",
+          duration_hours: "",
+          price: "",
+          level: "",
+          is_active: ""
+        });
       loadCourse();
-    } catch (err) {
+    }
+    catch (err) {
       setError("Error al crear el curso");
     }
   };
@@ -149,10 +208,22 @@ export default function CoursesPage() {
 
                 {/* type es para que el formu se envié automaticamente */}
                 {/* disabled es para que no pueda oprimir el boton muchas veces y crear muchas veces el mismo ususario */}
-                <Button className="w-full" type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Guardando..." : "Guardar Curso"}
-                </Button>
+                <div>
+                  {!edit ? (
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting ? "Guardando..." : "Guardar Curso"}</Button>
+                  ) : (
+                    <div>
+                      <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? "Procesando..." : "Actualizar Curso"}</Button>
+                      <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? "Redirigiendo..." : "Cancelar"}
+                      </Button>
+                    </div>
+                  )
+                  }
 
+                </div>
               </form>
             </CardContent>
 
@@ -194,9 +265,26 @@ export default function CoursesPage() {
                           <TableCell>{course.duration_hours}</TableCell>
                           <TableCell>{course.price}</TableCell>
                           <TableCell>{course.level}</TableCell>
-                          <TableCell>{course.is_active ? "Activo" : "Inactivo"}</TableCell>
+                          <TableCell>{course.is_active ? (
+                            <p className="text-green-600 font-medium">Activo</p>
+                          ) : (
+                            <p className="text-red-600 font-medium">Inactivo</p>
+                          )}</TableCell>
                           <TableCell>
                             {new Date(course.created_at).toLocaleDateString()}
+                          </TableCell>
+                          {/* ahora crear boton de editar para poder modificar los cursos */}
+                          <TableCell>
+                            <Button variant="secondary" onClick={() =>
+                              editcourse(course)
+                            }>Editar</Button>
+                          </TableCell>
+                          <TableCell>
+                            <Button variant="destructive" onClick={() =>
+                              deleteCourse(course.id)
+                            }>
+                              Eliminar
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}
