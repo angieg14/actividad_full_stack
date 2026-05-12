@@ -17,7 +17,7 @@ class VehicleSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CourseSerializer(serializers.ModelSerializer):
-    class Meta:
+    class Meta:        
         model = Course
         fields = '__all__'
 

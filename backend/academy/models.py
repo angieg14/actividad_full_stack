@@ -44,14 +44,14 @@ class Course(models.Model):
     duration_hours = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    is_active = models.BooleanField(default=False)
     # creados por liss y angie  
     COURSE_LEVEL = (
         ('basic', 'Basic'),
         ('intermediate', 'Intermediate'),
         ('advanced', 'Advanced'),
     )  
-    is_active = models.BooleanField(default=True)
+    
     # en default no se deja nada porque se necesita saber si o si el nivel
     level = models.CharField(max_length=12, choices=COURSE_LEVEL, default='basic') 
     def __str__(self):

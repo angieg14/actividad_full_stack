@@ -30,7 +30,8 @@ const courseSchema = z.object({
   description: z.string().min(1, "Ingresa el nombre del curso"),
   duration_hours: z.coerce.number().int().positive("Las horas deben ser mayor a cero"),
   price: z.coerce.number().min(0, "Escribe el precio"), //coerce es para lo tome como numero y no texto  
-  level: z.enum(["basic", "Basic", "intermediate", "Intermediate", "advanced", "Advanced"], "Nivel de curso no válido")
+  level: z.enum(["basic", "Basic", "intermediate", "Intermediate", "advanced", "Advanced"], "Nivel de curso no válido"),
+  is_active : z.boolean().optional("marca o no"),
 
 });
 
@@ -52,7 +53,7 @@ export default function CoursesPage() {
   const loadCourse = async () => {
     try {
       setIsLoading(true);
-      const data = await coursesService.getCourses();
+      const data = await courseService.getCourses();
       setCourses(data);
     } catch (err) {
       setError("Error al cargar los cursos. Verifica la conexión con el servidor.");
@@ -91,10 +92,11 @@ export default function CoursesPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-1">
           <Card>
-            <CardContent>
+            <CardHeader>
               <CardTitle>Registrar nuevo</CardTitle>
               <CardDescription>Añade el nuevo curso</CardDescription>
-
+            </CardHeader>
+            <CardContent>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="my-4">
                   <Label htmlFor="name">Nombre
@@ -123,7 +125,7 @@ export default function CoursesPage() {
 
                 <div className="my-4">
                   <Label htmlFor="price">Precio</Label>
-                  <Input id="price" {...register("price ")}></Input>
+                  <Input id="price" {...register("price")}></Input>
                   {errors.price && (
                     <p className="text-sm text-red-500">{errors.price.message}</p>
                   )}
@@ -139,35 +141,21 @@ export default function CoursesPage() {
 
                 <div className="my-4">
                   <Label htmlFor="is_active">Estado activo/inactivo</Label>
-                  <Input id="is_active" type="checkbox"></Input>
-
+                  <Input id="is_active" type="checkbox" {...register("is_active")}></Input>
+                  {errors.is_active && (
+                    <p className="text-sm text-red-500">{errors.is_active.message}</p>
+                  )}
                 </div>
 
                 {/* type es para que el formu se envié automaticamente */}
                 {/* disabled es para que no pueda oprimir el boton muchas veces y crear muchas veces el mismo ususario */}
                 <Button className="w-full" type="submit" disabled={isSubmitting}>
                   {isSubmitting ? "Guardando..." : "Guardar Curso"}
-                  GUARDAR CURSO
                 </Button>
 
-                {error && (
-                  <Alert variant="destructive" className="mt-4">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-
-                {success && (
-                  <Alert className="mt-4 border-green-500 text-green-700">
-                    <CheckCircle2 className="h-4 w-4" color="green" />
-                    <AlertTitle>Éxito</AlertTitle>
-                    <AlertDescription>{success}</AlertDescription>
-                  </Alert>
-                )}
               </form>
-
             </CardContent>
+
           </Card>
         </div>
 
@@ -176,12 +164,47 @@ export default function CoursesPage() {
             <CardHeader>
               <CardTitle>Listado de Cursos</CardTitle>
             </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <p className="text-center text-gray-500 py-4">Cargando cursos...</p>
+              ) : courses.length === 0 ? (
+                <p className="text-center text-gray-500 py-4">No hay cursos registrados.</p>
+              ) : (
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead>Descripción</TableHead>
+                        <TableHead>Duración de horas</TableHead>
+                        <TableHead>Precio</TableHead>
+                        <TableHead>Nivel</TableHead>
+                        <TableHead>Estado</TableHead>
+                        <TableHead>Fecha Creación</TableHead>
+                      </TableRow>
+                    </TableHeader>
 
-            <div>
-              <Table>
-
-              </Table>
-            </div>
+                    <TableBody>
+                      {courses.map((course) => (
+                        <TableRow key={course.id}>
+                          <TableCell className="font-medium">
+                            {course.name}
+                          </TableCell>
+                          <TableCell>{course.description}</TableCell>
+                          <TableCell>{course.duration_hours}</TableCell>
+                          <TableCell>{course.price}</TableCell>
+                          <TableCell>{course.level}</TableCell>
+                          <TableCell>{course.is_active ? "Activo" : "Inactivo"}</TableCell>
+                          <TableCell>
+                            {new Date(course.created_at).toLocaleDateString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
           </Card>
         </div>
       </div>
