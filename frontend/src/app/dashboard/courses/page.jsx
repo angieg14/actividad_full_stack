@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form"; //maneja el formulario
-import { zodResolver } from "@hookform/resolvers/zod"; //se encarga de que los datos sean válidos antes de mandarlos a Django
+import { zodResolver } from "@  "; //se encarga de que los datos sean válidos antes de mandarlos a Django
 import * as z from "zod";
 import { courseService } from "@/services/courses.service";
 
@@ -52,18 +52,7 @@ export default function CoursesPage() {
     resolver: zodResolver(courseSchema),
   });
 
-
-  const editCourse = async (course) => {
-    setEdit(course.id);
-    reset({
-      name: course.name,
-      description: course.description,
-      duration_hours: course.duration_hours,
-      price: course.price,
-      level: course.level,
-      is_active: course.is_active,
-    })
-  }
+  
   const deleteCourse = async (id) => {
     const confirmar = window.confirm("¿Estás seguro de que deseas eliminar este curso?");
     if (confirmar) {
