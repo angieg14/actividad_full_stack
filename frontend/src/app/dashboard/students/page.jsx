@@ -76,6 +76,13 @@ export default function StudentsPage() {
   };
 
   const handlePictureSuccess = (updated) => {
+    setStudents((prevStudents) => //se busca el student actual y se modifican sus datos
+      prevStudents.map((student) =>
+        student.id === updated.id ? updated : student
+      )
+    );  
+
+    setUploadStudent(null); //limpiamos el estado del student seleccionado
     // TODO(actividad): actualizar el estado local para reflejar la nueva foto
     // Pista: reemplaza el estudiante actualizado dentro de `students` usando su id.
     console.log("TODO: actualizar listado con estudiante modificado", updated);
