@@ -9,7 +9,12 @@ class StudentSerializer(serializers.ModelSerializer):
 class StudentPictureSerializer(serializers.ModelSerializer):
     def validate_profile_picture(self, value):
         # TODO(actividad): Implementar validaciones de archivo (tamano y tipo MIME).
+        if not value.content_type.startswitch('image/'):
+            raise serializers.ValidationError("El archivo debe ser una imagen") #raise lanza una excepción
+            
         # Ejemplo: permitir image/jpeg e image/png y limitar a 2MB.
+        if value.size > 2*1024*1024:
+            raise serializers.ValidationError("Imagen muy pesada, por favor que no supere los 2MB")
         return value
 
     class Meta:
