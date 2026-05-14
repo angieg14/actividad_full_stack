@@ -46,19 +46,30 @@ class StudentViewSet(viewsets.ModelViewSet):
 
         # validar tipo/tamaño antes de guardar
         if not incoming_file.content_type.startswitch(
-            "image"
+            "image/"
         ):  # saber que tipo de archivo es
             return Response(
                 {"detail": "El archivo debe ser una imagen"},
                 status=status.HTTP_400_BAD_REQUEST,  # error del cliente
             )
-        
-        #valida que no pese mas de 2mb
-        if incoming_file.size > 2*1024*1024:
+
+        # valida que no pese mas de 2mb
+        if incoming_file.size > 2 * 1024 * 1024:
             return Response(
-                {'detail' : 'La imagen es muy pesada (máximo 2MB)'},
+                {"detail": "La imagen es muy pesada (máximo 2MB)"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        # uso del StudentPictureSerializer
+        serializer = StudentPictureSerializer(student, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(
+                StudentSerializer(student, context={"request": request}).data,
+                status=status.HTTP_200_OK,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
             {
