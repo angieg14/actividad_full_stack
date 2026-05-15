@@ -23,7 +23,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     # @action: decorador de DRF para crear una ruta especial (upload.picture en este caso)
     @action(
         detail=True,
-        methods=["post"],
+        methods=["post"], #es post porque se está CREANDO una foto
         url_path="upload-picture",
         parser_classes=[MultiPartParser, FormParser],
     )  # parser_classes es para que Django sepa que va a recibir una imagen y no texto
@@ -84,3 +84,6 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
 
 class LessonViewSet(viewsets.ModelViewSet):
     pass
+
+
+    
